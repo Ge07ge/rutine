@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rutina George</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-light: #ffffff;
+            --bg-dark: #1a1a1a;
+            --text-light: #000000;
+            --text-dark: #ffffff;
+            --accent: #4F46E5;
+            --danger: #EF4444;
+            --success: #10B981;
+            --border-light: #e5e7eb;
+            --border-dark: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 16px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        body.dark-mode .header {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .toggle-dark, .edit-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .edit-btn {
+            font-size: 18px;
+        }
+
+        .day-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .day-btn {
+            padding: 12px 8px;
+            border: 2px solid var(--border-light);
+            background-color: transparent;
+            color: var(--text-light);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .day-btn {
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .day-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .day-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+
+        .exercise-card {
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background-color: var(--bg-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        body.dark-mode .exercise-card {
+            background-color: #2a2a2a;
+            border-color: var(--border-dark);
+        }
+
+        .exercise-card.completed {
+            opacity: 0.6;
+        }
+
+        .exercise-card.completed .exercise-name {
+            text-decoration: line-through;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .exercise-content {
+            flex: 1;
+        }
+
+        .exercise-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .exercise-reps {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .exercise-reps {
+            color: #aaa;
+        }
+
+        .exercise-video-link {
+            display: inline-block;
+            font-size: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .exercise-video-link:hover {
+            text-decoration: underline;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .btn-small {
+            background: none;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            display: none;
+        }
+
+        body.dark-mode .btn-small {
+            border-color: var(--border-dark);
+        }
+
+        .edit-mode .btn-small {
+            display: block;
+        }
+
+        .btn-small.edit {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-small.delete {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .section-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark-mode .section-label {
+            color: #666;
+        }
+
+        .add-exercise-btn {
+            font-size: 12px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .edit-mode .add-exercise-btn {
+            display: block;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .modal-content {
+            background-color: var(--bg-light);
+            border-radius: 12px 12px 0 0;
+            padding: 24px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .modal-content {
+            background-color: #2a2a2a;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group textarea {
+            background-color: #1a1a1a;
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            flex: 1;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:active {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: var(--border-light);
+            color: var(--text-light);
+        }
+
+        body.dark-mode .btn-secondary {
+            background-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:active {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+
+            .day-selector {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💪 RUTINA</h1>
+            <div class="header-buttons">
+                <button class="edit-btn" id="editToggleBtn" title="Editar">✏️</button>
+                <button class="toggle-dark" id="toggleDark">🌙</button>
+            </div>
+        </div>
+
+        <div class="day-selector" id="daySelector"></div>
+
+        <div id="contentArea"></div>
+    </div>
+
+    <!-- Modal de edición -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Agregar Ejercicio</div>
+            
+            <form id="exerciseForm">
+                <div class="form-group">
+                    <label for="exerciseName">Nombre del ejercicio *</label>
+                    <input type="text" id="exerciseName" required placeholder="Ej: Press de pecho">
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseReps">Series y repeticiones</label>
+                    <input type="text" id="exerciseReps" placeholder="Ej: 4x10-15">
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseVideo">Link de YouTube (opcional)</label>
+                    <input type="text" id="exerciseVideo" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let editMode = false;
+        let currentEditingId = null;
+        let rutina = null;
+
+        const defaultRutina = {
+            lunes: {
+                title: "LUNES - Pecho + Hombro + Tríceps",
+                sections: [
+                    {
+                        name: "Movilidad",
+                        exercises: [
+                            { name: "Cat-Cow" },
+                            { name: "Rotaciones torácicas" },
+                            { name: "Estiramiento de cadera" },
+                            { name: "Sentadilla profunda" },
+                            { name: "Puente de glúteo" }
+                        ]
+                    },
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "Press de pecho con mancuernas", reps: "4x10-15" },
+                            { name: "Flexiones", reps: "3 series al fallo" },
+                            { name: "Press militar", reps: "4x10-12" },
+                            { name: "Elevaciones laterales", reps: "3x15" },
+                            { name: "Extensión de tríceps sobre cabeza", reps: "3x15" }
+                        ]
+                    },
+                    {
+                        name: "Final",
+                        exercises: [
+                            { name: "Rutina funcional", reps: "2 rondas" }
+                        ]
+                    }
+                ]
+            },
+            martes: {
+                title: "MARTES - Piernas",
+                sections: [
+                    {
+                        name: "Movilidad",
+                        exercises: [
+                            { name: "Cat-Cow" },
+                            { name: "Rotaciones torácicas" },
+                            { name: "Estiramiento de cadera" },
+                            { name: "Sentadilla profunda" },
+                            { name: "Puente de glúteo" }
+                        ]
+                    },
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "Sentadilla Goblet", reps: "4x15" },
+                            { name: "Zancadas", reps: "4x12 por pierna" },
+                            { name: "Peso muerto rumano", reps: "4x12" },
+                            { name: "Puente de glúteo con mancuerna", reps: "4x15" },
+                            { name: "Pantorrillas", reps: "4x20" }
+                        ]
+                    },
+                    {
+                        name: "Final",
+                        exercises: [
+                            { name: "Rutina funcional", reps: "3 rondas" }
+                        ]
+                    }
+                ]
+            },
+            miercoles: {
+                title: "MIÉRCOLES - Espalda + Bíceps",
+                sections: [
+                    {
+                        name: "Movilidad",
+                        exercises: [
+                            { name: "Cat-Cow" },
+                            { name: "Rotaciones torácicas" },
+                            { name: "Estiramiento de cadera" },
+                            { name: "Sentadilla profunda" },
+                            { name: "Puente de glúteo" }
+                        ]
+                    },
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "Remo unilateral", reps: "4x12" },
+                            { name: "Remo inclinado", reps: "4x12" },
+                            { name: "Pullover", reps: "3x15" },
+                            { name: "Curl bíceps", reps: "4x12" },
+                            { name: "Curl martillo", reps: "3x12" }
+                        ]
+                    },
+                    {
+                        name: "Cardio",
+                        exercises: [
+                            { name: "Bicicleta spinning", reps: "20-30 min" }
+                        ]
+                    }
+                ]
+            },
+            jueves: {
+                title: "JUEVES - Cardio + Core",
+                sections: [
+                    {
+                        name: "Movilidad",
+                        exercises: [
+                            { name: "Cat-Cow" },
+                            { name: "Rotaciones torácicas" },
+                            { name: "Estiramiento de cadera" },
+                            { name: "Sentadilla profunda" },
+                            { name: "Puente de glúteo" }
+                        ]
+                    },
+                    {
+                        name: "Cardio",
+                        exercises: [
+                            { name: "Bicicleta spinning", reps: "40 min" }
+                        ]
+                    },
+                    {
+                        name: "Core",
+                        exercises: [
+                            { name: "Plancha", reps: "3x30-45 seg" },
+                            { name: "Dead Bug", reps: "3x15" },
+                            { name: "Crunch", reps: "3x20" },
+                            { name: "Russian Twist", reps: "3x20" }
+                        ]
+                    },
+                    {
+                        name: "Final",
+                        exercises: [
+                            { name: "Rutina funcional", reps: "3 rondas" }
+                        ]
+                    }
+                ]
+            },
+            viernes: {
+                title: "VIERNES - Descanso",
+                sections: [
+                    {
+                        name: "Actividad",
+                        exercises: [
+                            { name: "Descanso" },
+                            { name: "Caminata opcional", reps: "30 min" }
+                        ]
+                    }
+                ]
+            },
+            sabado: {
+                title: "SÁBADO - Full Body (Opcional)",
+                sections: [
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "4 vueltas completas:" },
+                            { name: "Sentadilla", reps: "15" },
+                            { name: "Press hombro", reps: "12" },
+                            { name: "Remo", reps: "12" },
+                            { name: "Curl bíceps", reps: "12" },
+                            { name: "Tríceps", reps: "12" },
+                            { name: "Burpees", reps: "10" }
+                        ]
+                    }
+                ]
+            },
+            domingo: {
+                title: "DOMINGO - Cardio Largo",
+                sections: [
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "Bicicleta spinning", reps: "45-60 min" }
+                        ]
+                    },
+                    {
+                        name: "Final",
+                        exercises: [
+                            { name: "Rutina funcional suave", reps: "2 rondas" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const days = [
+            { key: "lunes", label: "Lun" },
+            { key: "martes", label: "Mar" },
+            { key: "miercoles", label: "Mié" },
+            { key: "jueves", label: "Jue" },
+            { key: "viernes", label: "Vie" },
+            { key: "sabado", label: "Sab" },
+            { key: "domingo", label: "Dom" }
+        ];
+
+        // Load rutina from localStorage or use default
+        function loadRutina() {
+            const saved = localStorage.getItem('rutina');
+            rutina = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultRutina));
+        }
+
+        // Save rutina to localStorage
+        function saveRutina() {
+            localStorage.setItem('rutina', JSON.stringify(rutina));
+        }
+
+        function createExerciseCard(exercise, id, sectionName, dayKey) {
+            const storageKey = `exercise_${id}`;
+            const isCompleted = localStorage.getItem(storageKey) === 'true';
+            
+            const card = document.createElement('div');
+            card.className = `exercise-card ${isCompleted ? 'completed' : ''}`;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = isCompleted;
+            
+            const checkboxWrapper = document.createElement('div');
+            checkboxWrapper.className = 'checkbox-wrapper';
+            checkboxWrapper.appendChild(checkbox);
+            
+            const content = document.createElement('div');
+            content.className = 'exercise-content';
+            
+            const name = document.createElement('div');
+            name.className = 'exercise-name';
+            name.textContent = exercise.name;
+            content.appendChild(name);
+            
+            if (exercise.reps) {
+                const reps = document.createElement('div');
+                reps.className = 'exercise-reps';
+                reps.textContent = exercise.reps;
+                content.appendChild(reps);
+            }
+
+            if (exercise.video) {
+                const videoLink = document.createElement('a');
+                videoLink.className = 'exercise-video-link';
+                videoLink.href = exercise.video;
+                videoLink.target = '_blank';
+                videoLink.textContent = '📹 Ver video';
+                content.appendChild(videoLink);
+            }
+            
+            card.appendChild(checkboxWrapper);
+            card.appendChild(content);
+
+            // Action buttons (only visible in edit mode)
+            if (editMode) {
+                const actions = document.createElement('div');
+                actions.className = 'exercise-actions';
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn-small edit';
+                editBtn.textContent = '✏️';
+                editBtn.onclick = (e) => {
+                    e.preventDefault();
+                    openEditModal(exercise, id, sectionName, dayKey);
+                };
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-small delete';
+                deleteBtn.textContent = '🗑️';
+                deleteBtn.onclick = (e) => {
+                    e.preventDefault();
+                    deleteExercise(dayKey, sectionName, exercise);
+                };
+
+                actions.appendChild(editBtn);
+                actions.appendChild(deleteBtn);
+                card.appendChild(actions);
+            }
+            
+            checkbox.addEventListener('change', (e) => {
+                localStorage.setItem(storageKey, e.target.checked);
+                if (e.target.checked) {
+                    card.classList.add('completed');
+                } else {
+                    card.classList.remove('completed');
+                }
+            });
+            
+            return card;
+        }
+
+        function renderDay(dayKey) {
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = '';
+            
+            const dayData = rutina[dayKey];
+            
+            const dayTitle = document.createElement('div');
+            dayTitle.className = 'day-title';
+            dayTitle.textContent = dayData.title;
+            contentArea.appendChild(dayTitle);
+            
+            dayData.sections.forEach((section, sectionIdx) => {
+                const sectionLabel = document.createElement('div');
+                sectionLabel.className = 'section-label';
+                
+                const sectionName = document.createElement('span');
+                sectionName.textContent = section.name;
+                sectionLabel.appendChild(sectionName);
+
+                if (editMode) {
+                    const addBtn = document.createElement('button');
+                    addBtn.className = 'add-exercise-btn';
+                    addBtn.textContent = '+ Agregar';
+                    addBtn.onclick = (e) => {
+                        e.preventDefault();
+                        openAddModal(dayKey, section.name);
+                    };
+                    sectionLabel.appendChild(addBtn);
+                }
+
+                contentArea.appendChild(sectionLabel);
+                
+                section.exercises.forEach((exercise, idx) => {
+                    const exerciseId = `${dayKey}_${section.name}_${idx}`;
+                    const card = createExerciseCard(exercise, exerciseId, section.name, dayKey);
+                    contentArea.appendChild(card);
+                });
+            });
+        }
+
+        function initDaySelector() {
+            const selector = document.getElementById('daySelector');
+            days.forEach((day, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `day-btn ${idx === 0 ? 'active' : ''}`;
+                btn.textContent = day.label;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderDay(day.key);
+                });
+                selector.appendChild(btn);
+            });
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            const btn = document.getElementById('editToggleBtn');
+            btn.style.opacity = editMode ? '1' : '0.5';
+            document.body.classList.toggle('edit-mode');
+            
+            const activeBtn = document.querySelector('.day-btn.active');
+            const dayKey = days[Array.from(document.querySelectorAll('.day-btn')).indexOf(activeBtn)].key;
+            renderDay(dayKey);
+        }
+
+        function openAddModal(dayKey, sectionName) {
+            currentEditingId = `new_${dayKey}_${sectionName}`;
+            document.getElementById('modalTitle').textContent = 'Agregar Ejercicio';
+            document.getElementById('exerciseForm').reset();
+            document.getElementById('saveBtn').textContent = 'Agregar';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function openEditModal(exercise, id, sectionName, dayKey) {
+            currentEditingId = id;
+            document.getElementById('modalTitle').textContent = 'Editar Ejercicio';
+            document.getElementById('exerciseName').value = exercise.name;
+            document.getElementById('exerciseReps').value = exercise.reps || '';
+            document.getElementById('exerciseVideo').value = exercise.video || '';
+            document.getElementById('saveBtn').textContent = 'Guardar Cambios';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+            currentEditingId = null;
+        }
+
+        function saveExercise(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('exerciseName').value.trim();
+            const reps = document.getElementById('exerciseReps').value.trim();
+            const video = document.getElementById('exerciseVideo').value.trim();
+
+            if (!name) {
+                alert('El nombre del ejercicio es requerido');
+                return;
+            }
+
+            if (currentEditingId.startsWith('new_')) {
+                // Add new exercise
+                const [, dayKey, sectionName] = currentEditingId.split('_');
+                const section = rutina[dayKey].sections.find(s => s.name === sectionName);
+                section.exercises.push({
+                    name,
+                    reps: reps || undefined,
+                    video: video || undefined
+                });
+            } else {
+                // Edit existing exercise
+                const [dayKey, sectionName, idx] = currentEditingId.split('_');
+                const section = rutina[dayKey].sections.find(s => s.name === sectionName);
+                section.exercises[parseInt(idx)] = {
+                    name,
+                    reps: reps || undefined,
+                    video: video || undefined
+                };
+            }
+
+            saveRutina();
+            closeEditModal();
+
+            const activeBtn = document.querySelector('.day-btn.active');
+            const dayKey = days[Array.from(document.querySelectorAll('.day-btn')).indexOf(activeBtn)].key;
+            renderDay(dayKey);
+        }
+
+        function deleteExercise(dayKey, sectionName, exercise) {
+            if (confirm(`¿Eliminar "${exercise.name}"?`)) {
+                const section = rutina[dayKey].sections.find(s => s.name === sectionName);
+                const idx = section.exercises.indexOf(exercise);
+                section.exercises.splice(idx, 1);
+                saveRutina();
+                renderDay(dayKey);
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            updateToggleButton();
+        }
+
+        function updateToggleButton() {
+            const btn = document.getElementById('toggleDark');
+            btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+
+        // Event listeners
+        document.getElementById('editToggleBtn').addEventListener('click', toggleEditMode);
+        document.getElementById('toggleDark').addEventListener('click', toggleDarkMode);
+        document.getElementById('cancelBtn').addEventListener('click', closeEditModal);
+        document.getElementById('exerciseForm').addEventListener('submit', saveExercise);
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('editModal')) {
+                closeEditModal();
+            }
+        });
+
+        // Initialize
+        loadRutina();
+        initDaySelector();
+        renderDay('lunes');
+        
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            updateToggleButton();
+        }
+    </script>
+</body>
+</html>

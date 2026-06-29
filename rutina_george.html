@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rutina George</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-light: #ffffff;
+            --bg-dark: #1a1a1a;
+            --text-light: #000000;
+            --text-dark: #ffffff;
+            --accent: #4F46E5;
+            --danger: #EF4444;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --border-light: #e5e7eb;
+            --border-dark: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 16px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        body.dark-mode .header {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .toggle-dark, .edit-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .edit-btn {
+            font-size: 18px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        body.dark-mode .tabs {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .tab-btn {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .tab-btn {
+            color: var(--text-dark);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .day-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .day-btn {
+            padding: 12px 8px;
+            border: 2px solid var(--border-light);
+            background-color: transparent;
+            color: var(--text-light);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .day-btn {
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .day-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .day-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+
+        .exercise-card {
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background-color: var(--bg-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        body.dark-mode .exercise-card {
+            background-color: #2a2a2a;
+            border-color: var(--border-dark);
+        }
+
+        .exercise-card.completed {
+            opacity: 0.6;
+        }
+
+        .exercise-card.completed .exercise-name {
+            text-decoration: line-through;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .exercise-content {
+            flex: 1;
+        }
+
+        .exercise-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .exercise-reps {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .exercise-reps {
+            color: #aaa;
+        }
+
+        .exercise-video-link {
+            display: inline-block;
+            font-size: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .exercise-video-link:hover {
+            text-decoration: underline;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .btn-small {
+            background: none;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            display: none;
+        }
+
+        body.dark-mode .btn-small {
+            border-color: var(--border-dark);
+        }
+
+        .edit-mode .btn-small {
+            display: block;
+        }
+
+        .btn-small.edit {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-small.delete {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .section-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark-mode .section-label {
+            color: #666;
+        }
+
+        .add-exercise-btn {
+            font-size: 12px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .edit-mode .add-exercise-btn {
+            display: block;
+        }
+
+        /* Medidas styles */
+        .measure-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .measure-card {
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 16px;
+            background-color: var(--bg-light);
+        }
+
+        body.dark-mode .measure-card {
+            background-color: #2a2a2a;
+            border-color: var(--border-dark);
+        }
+
+        .measure-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .measure-frequency {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .measure-frequency {
+            color: #aaa;
+        }
+
+        .measure-instruction {
+            font-size: 13px;
+            color: #666;
+            background-color: var(--border-light);
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        body.dark-mode .measure-instruction {
+            background-color: #1a1a1a;
+            color: #aaa;
+        }
+
+        .measure-value {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .measure-value input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        body.dark-mode .measure-value input {
+            background-color: #1a1a1a;
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .measure-value button {
+            padding: 10px 16px;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .measure-history {
+            margin-top: 12px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 12px;
+        }
+
+        body.dark-mode .measure-history {
+            border-top-color: var(--border-dark);
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .history-item {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item {
+            position: relative;
+        }
+
+        .history-value {
+            font-weight: 600;
+        }
+
+        .history-delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .history-item:hover .history-delete-btn {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .history-delete-btn {
+                opacity: 1;
+            }
+        }
+
+        .history-change {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .history-change.positive {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+
+        body.dark-mode .history-change.positive {
+            background-color: #064E3B;
+            color: #86EFAC;
+        }
+
+        .history-change.negative {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+
+        body.dark-mode .history-change.negative {
+            background-color: #7F1D1D;
+            color: #FCA5A5;
+        }
+
+        .history-change.neutral {
+            background-color: var(--border-light);
+            color: #666;
+        }
+
+        body.dark-mode .history-change.neutral {
+            background-color: var(--border-dark);
+            color: #aaa;
+        }
+
+        .history-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        body.dark-mode .history-date {
+            color: #666;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .modal-content {
+            background-color: var(--bg-light);
+            border-radius: 12px 12px 0 0;
+            padding: 24px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .modal-content {
+            background-color: #2a2a2a;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group textarea {
+            background-color: #1a1a1a;
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            flex: 1;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:active {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: var(--border-light);
+            color: var(--text-light);
+        }
+
+        body.dark-mode .btn-secondary {
+            background-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:active {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+
+            .day-selector {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💪 RUTINA</h1>
+            <div class="header-buttons">
+                <button class="edit-btn" id="editToggleBtn" title="Editar">✏️</button>
+                <button class="toggle-dark" id="toggleDark">🌙</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="rutina">Rutina</button>
+            <button class="tab-btn" data-tab="medidas">Medidas</button>
+        </div>
+
+        <!-- Tab: Rutina -->
+        <div id="rutina" class="tab-content active">
+            <div class="day-selector" id="daySelector"></div>
+            <div id="contentArea"></div>
+        </div>
+
+        <!-- Tab: Medidas -->
+        <div id="medidas" class="tab-content">
+            <div class="measure-grid" id="measuresGrid"></div>
+        </div>
+    </div>
+
+    <!-- Modal de edición -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Agregar Ejercicio</div>
+            
+            <form id="exerciseForm">
+                <div class="form-group">
+                    <label for="exerciseName">Nombre del ejercicio *</label>
+                    <input type="text" id="exerciseName" required placeholder="Ej: Press de pecho">
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseReps">Series y repeticiones</label>
+                    <input type="text" id="exerciseReps" placeholder="Ej: 4x10-15">
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseVideo">Link de YouTube (opcional)</label>
+                    <input type="text" id="exerciseVideo" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let editMode = false;
+        let currentEditingId = null;
+        let rutina = null;
+
+        const defaultRutina = {
+            lunes: {
+                title: "LUNES - Pecho + Hombro + Tríceps",
+                sections: [
+                    {
+                        name: "Movilidad",
+                        exercises: [
+                            { name: "Cat-Cow" },
+                            { name: "Rotaciones torácicas" },
+                            { name: "Estiramiento de cadera" },
+                            { name: "Sentadilla profunda" },
+                            { name: "Puente de glúteo" }
+                        ]
+                    },
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "Press de pecho con mancuernas", reps: "4x10-15" },
+                            { name: "Flexiones", reps: "3 series al fallo" },
+                            { name: "Press militar", reps: "4x10-12" },
+                            { name: "Elevaciones laterales", reps: "3x15" },
+                            { name: "Extensión de tríceps sobre cabeza", reps: "3x15" }
+                        ]
+                    },
+                    {
+                        name: "Final",
+                        exercises: [
+                            { name: "Rutina funcional", reps: "2 rondas" }
+                        ]
+                    }
+                ]
+            },
+            martes: {
+                title: "MARTES - Piernas",
+                sections: [
+                    {
+                        name: "Movilidad",
+                        exercises: [
+                            { name: "Cat-Cow" },
+                            { name: "Rotaciones torácicas" },
+                            { name: "Estiramiento de cadera" },
+                            { name: "Sentadilla profunda" },
+                            { name: "Puente de glúteo" }
+                        ]
+                    },
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "Sentadilla Goblet", reps: "4x15" },
+                            { name: "Zancadas", reps: "4x12 por pierna" },
+                            { name: "Peso muerto rumano", reps: "4x12" },
+                            { name: "Puente de glúteo con mancuerna", reps: "4x15" },
+                            { name: "Pantorrillas", reps: "4x20" }
+                        ]
+                    },
+                    {
+                        name: "Final",
+                        exercises: [
+                            { name: "Rutina funcional", reps: "3 rondas" }
+                        ]
+                    }
+                ]
+            },
+            miercoles: {
+                title: "MIÉRCOLES - Espalda + Bíceps",
+                sections: [
+                    {
+                        name: "Movilidad",
+                        exercises: [
+                            { name: "Cat-Cow" },
+                            { name: "Rotaciones torácicas" },
+                            { name: "Estiramiento de cadera" },
+                            { name: "Sentadilla profunda" },
+                            { name: "Puente de glúteo" }
+                        ]
+                    },
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "Remo unilateral", reps: "4x12" },
+                            { name: "Remo inclinado", reps: "4x12" },
+                            { name: "Pullover", reps: "3x15" },
+                            { name: "Curl bíceps", reps: "4x12" },
+                            { name: "Curl martillo", reps: "3x12" }
+                        ]
+                    },
+                    {
+                        name: "Cardio",
+                        exercises: [
+                            { name: "Bicicleta spinning", reps: "20-30 min" }
+                        ]
+                    }
+                ]
+            },
+            jueves: {
+                title: "JUEVES - Cardio + Core",
+                sections: [
+                    {
+                        name: "Movilidad",
+                        exercises: [
+                            { name: "Cat-Cow" },
+                            { name: "Rotaciones torácicas" },
+                            { name: "Estiramiento de cadera" },
+                            { name: "Sentadilla profunda" },
+                            { name: "Puente de glúteo" }
+                        ]
+                    },
+                    {
+                        name: "Cardio",
+                        exercises: [
+                            { name: "Bicicleta spinning", reps: "40 min" }
+                        ]
+                    },
+                    {
+                        name: "Core",
+                        exercises: [
+                            { name: "Plancha", reps: "3x30-45 seg" },
+                            { name: "Dead Bug", reps: "3x15" },
+                            { name: "Crunch", reps: "3x20" },
+                            { name: "Russian Twist", reps: "3x20" }
+                        ]
+                    },
+                    {
+                        name: "Final",
+                        exercises: [
+                            { name: "Rutina funcional", reps: "3 rondas" }
+                        ]
+                    }
+                ]
+            },
+            viernes: {
+                title: "VIERNES - Descanso",
+                sections: [
+                    {
+                        name: "Actividad",
+                        exercises: [
+                            { name: "Descanso" },
+                            { name: "Caminata opcional", reps: "30 min" }
+                        ]
+                    }
+                ]
+            },
+            sabado: {
+                title: "SÁBADO - Full Body (Opcional)",
+                sections: [
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "4 vueltas completas:" },
+                            { name: "Sentadilla", reps: "15" },
+                            { name: "Press hombro", reps: "12" },
+                            { name: "Remo", reps: "12" },
+                            { name: "Curl bíceps", reps: "12" },
+                            { name: "Tríceps", reps: "12" },
+                            { name: "Burpees", reps: "10" }
+                        ]
+                    }
+                ]
+            },
+            domingo: {
+                title: "DOMINGO - Cardio Largo",
+                sections: [
+                    {
+                        name: "Entrenamiento",
+                        exercises: [
+                            { name: "Bicicleta spinning", reps: "45-60 min" }
+                        ]
+                    },
+                    {
+                        name: "Final",
+                        exercises: [
+                            { name: "Rutina funcional suave", reps: "2 rondas" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const measures = [
+            { id: "peso", name: "Peso", unit: "kg", frequency: "1 vez por semana", instruction: "En ayunas, después de ir al baño, misma báscula" },
+            { id: "cintura", name: "Cintura", unit: "cm", frequency: "Cada mes", instruction: "A la altura del ombligo, relajado" },
+            { id: "cuello", name: "Cuello", unit: "cm", frequency: "Cada mes", instruction: "Debajo de la nuez" },
+            { id: "pecho", name: "Pecho", unit: "cm", frequency: "Cada mes", instruction: "A la altura de los pezones" },
+            { id: "abdomen", name: "Abdomen", unit: "cm", frequency: "Cada mes", instruction: "En la parte más ancha del abdomen" },
+            { id: "cadera", name: "Cadera", unit: "cm", frequency: "Cada mes", instruction: "En la parte más ancha de los glúteos" },
+            { id: "brazo_izq", name: "Brazo Izquierdo", unit: "cm", frequency: "Cada mes", instruction: "Relajado, mitad del bíceps" },
+            { id: "brazo_der", name: "Brazo Derecho", unit: "cm", frequency: "Cada mes", instruction: "Relajado, mitad del bíceps" },
+            { id: "muslo_izq", name: "Muslo Izquierdo", unit: "cm", frequency: "Cada mes", instruction: "15 cm arriba de la rodilla aproximadamente" },
+            { id: "muslo_der", name: "Muslo Derecho", unit: "cm", frequency: "Cada mes", instruction: "15 cm arriba de la rodilla aproximadamente" },
+            { id: "pantorrilla_izq", name: "Pantorrilla Izquierda", unit: "cm", frequency: "Cada mes", instruction: "Parte más ancha" },
+            { id: "pantorrilla_der", name: "Pantorrilla Derecha", unit: "cm", frequency: "Cada mes", instruction: "Parte más ancha" }
+        ];
+
+        const days = [
+            { key: "lunes", label: "Lun" },
+            { key: "martes", label: "Mar" },
+            { key: "miercoles", label: "Mié" },
+            { key: "jueves", label: "Jue" },
+            { key: "viernes", label: "Vie" },
+            { key: "sabado", label: "Sab" },
+            { key: "domingo", label: "Dom" }
+        ];
+
+        // Load rutina from localStorage or use default
+        function loadRutina() {
+            const saved = localStorage.getItem('rutina');
+            rutina = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultRutina));
+        }
+
+        // Save rutina to localStorage
+        function saveRutina() {
+            localStorage.setItem('rutina', JSON.stringify(rutina));
+        }
+
+        // Measures functions
+        function getMeasureHistory(measureId) {
+            const history = JSON.parse(localStorage.getItem(`measure_${measureId}`) || '[]');
+            return history;
+        }
+
+        function saveMeasureValue(measureId, value) {
+            const history = getMeasureHistory(measureId);
+            history.push({
+                value: parseFloat(value),
+                date: new Date().toISOString()
+            });
+            localStorage.setItem(`measure_${measureId}`, JSON.stringify(history));
+        }
+
+        function getLastMeasure(measureId) {
+            const history = getMeasureHistory(measureId);
+            return history.length > 0 ? history[history.length - 1] : null;
+        }
+
+        function getPreviousMeasure(measureId) {
+            const history = getMeasureHistory(measureId);
+            return history.length > 1 ? history[history.length - 2] : null;
+        }
+
+        function calculateChange(measureId) {
+            const last = getLastMeasure(measureId);
+            const previous = getPreviousMeasure(measureId);
+            
+            if (!last || !previous) return null;
+            
+            const change = last.value - previous.value;
+            return {
+                value: change,
+                percent: ((change / previous.value) * 100).toFixed(1)
+            };
+        }
+
+        function formatDate(isoDate) {
+            const date = new Date(isoDate);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (date.toDateString() === today.toDateString()) {
+                return 'Hoy';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Ayer';
+            }
+            
+            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        }
+
+        function deleteMeasureRecord(measureId, index) {
+            if (confirm('¿Eliminar este registro?')) {
+                const history = getMeasureHistory(measureId);
+                history.splice(index, 1);
+                localStorage.setItem(`measure_${measureId}`, JSON.stringify(history));
+                renderMeasures();
+            }
+        }
+
+        function renderMeasures() {
+            const grid = document.getElementById('measuresGrid');
+            grid.innerHTML = '';
+
+            measures.forEach(measure => {
+                const card = document.createElement('div');
+                card.className = 'measure-card';
+
+                const header = document.createElement('div');
+                header.className = 'measure-header';
+                header.textContent = measure.name;
+
+                const frequency = document.createElement('div');
+                frequency.className = 'measure-frequency';
+                frequency.textContent = `📅 ${measure.frequency}`;
+
+                const instruction = document.createElement('div');
+                instruction.className = 'measure-instruction';
+                instruction.textContent = `💡 ${measure.instruction}`;
+
+                const inputContainer = document.createElement('div');
+                inputContainer.className = 'measure-value';
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.placeholder = `Ej: 75`;
+                input.step = '0.1';
+
+                const button = document.createElement('button');
+                button.textContent = 'Guardar';
+                button.onclick = () => {
+                    if (input.value) {
+                        saveMeasureValue(measure.id, input.value);
+                        input.value = '';
+                        renderMeasures();
+                    }
+                };
+
+                inputContainer.appendChild(input);
+                inputContainer.appendChild(button);
+
+                const historyDiv = document.createElement('div');
+                historyDiv.className = 'measure-history';
+
+                const history = getMeasureHistory(measure.id);
+                if (history.length > 0) {
+                    history.slice().reverse().forEach((item, idx) => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.style.display = 'flex';
+                        historyItem.style.alignItems = 'center';
+                        historyItem.style.gap = '8px';
+
+                        const valueDate = document.createElement('div');
+                        valueDate.style.flex = '1';
+                        valueDate.style.minWidth = '0';
+
+                        const value = document.createElement('span');
+                        value.className = 'history-value';
+                        value.textContent = `${item.value}${measure.unit}`;
+
+                        const date = document.createElement('span');
+                        date.className = 'history-date';
+                        date.textContent = ` • ${formatDate(item.date)}`;
+
+                        valueDate.appendChild(value);
+                        valueDate.appendChild(date);
+
+                        const changeSpan = document.createElement('span');
+                        changeSpan.className = 'history-change';
+
+                        if (idx === 0 && history.length > 1) {
+                            const change = calculateChange(measure.id);
+                            if (change) {
+                                const symbol = change.value > 0 ? '+' : '';
+                                const changeClass = change.value > 0 ? (measure.id === 'peso' ? 'negative' : 'positive') : (measure.id === 'peso' ? 'positive' : 'negative');
+                                if (change.value === 0) {
+                                    changeSpan.className = 'history-change neutral';
+                                    changeSpan.textContent = 'Sin cambios';
+                                } else {
+                                    changeSpan.className = `history-change ${changeClass}`;
+                                    changeSpan.textContent = `${symbol}${change.value}${measure.unit} (${symbol}${change.percent}%)`;
+                                }
+                            }
+                        } else if (idx === 0) {
+                            changeSpan.className = 'history-change neutral';
+                            changeSpan.textContent = 'Primera medida';
+                        }
+
+                        historyItem.appendChild(valueDate);
+                        if (changeSpan.textContent) {
+                            historyItem.appendChild(changeSpan);
+                        }
+
+                        // Delete button
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'history-delete-btn';
+                        deleteBtn.textContent = '✕';
+                        deleteBtn.title = 'Eliminar';
+                        deleteBtn.onclick = (e) => {
+                            e.preventDefault();
+                            const actualIndex = history.length - 1 - idx;
+                            deleteMeasureRecord(measure.id, actualIndex);
+                        };
+
+                        historyItem.appendChild(deleteBtn);
+
+                        historyDiv.appendChild(historyItem);
+                    });
+                } else {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.style.textAlign = 'center';
+                    emptyMsg.style.color = '#999';
+                    emptyMsg.style.fontSize = '13px';
+                    emptyMsg.textContent = 'Sin registros aún';
+                    historyDiv.appendChild(emptyMsg);
+                }
+
+                card.appendChild(header);
+                card.appendChild(frequency);
+                card.appendChild(instruction);
+                card.appendChild(inputContainer);
+                card.appendChild(historyDiv);
+
+                grid.appendChild(card);
+            });
+        }
+
+        function createExerciseCard(exercise, id, sectionName, dayKey) {
+            const storageKey = `exercise_${id}`;
+            const isCompleted = localStorage.getItem(storageKey) === 'true';
+            
+            const card = document.createElement('div');
+            card.className = `exercise-card ${isCompleted ? 'completed' : ''}`;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = isCompleted;
+            
+            const checkboxWrapper = document.createElement('div');
+            checkboxWrapper.className = 'checkbox-wrapper';
+            checkboxWrapper.appendChild(checkbox);
+            
+            const content = document.createElement('div');
+            content.className = 'exercise-content';
+            
+            const name = document.createElement('div');
+            name.className = 'exercise-name';
+            name.textContent = exercise.name;
+            content.appendChild(name);
+            
+            if (exercise.reps) {
+                const reps = document.createElement('div');
+                reps.className = 'exercise-reps';
+                reps.textContent = exercise.reps;
+                content.appendChild(reps);
+            }
+
+            if (exercise.video) {
+                const videoLink = document.createElement('a');
+                videoLink.className = 'exercise-video-link';
+                videoLink.href = exercise.video;
+                videoLink.target = '_blank';
+                videoLink.textContent = '📹 Ver video';
+                content.appendChild(videoLink);
+            }
+            
+            card.appendChild(checkboxWrapper);
+            card.appendChild(content);
+
+            // Action buttons (only visible in edit mode)
+            if (editMode) {
+                const actions = document.createElement('div');
+                actions.className = 'exercise-actions';
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn-small edit';
+                editBtn.textContent = '✏️';
+                editBtn.onclick = (e) => {
+                    e.preventDefault();
+                    openEditModal(exercise, id, sectionName, dayKey);
+                };
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-small delete';
+                deleteBtn.textContent = '🗑️';
+                deleteBtn.onclick = (e) => {
+                    e.preventDefault();
+                    deleteExercise(dayKey, sectionName, exercise);
+                };
+
+                actions.appendChild(editBtn);
+                actions.appendChild(deleteBtn);
+                card.appendChild(actions);
+            }
+            
+            checkbox.addEventListener('change', (e) => {
+                localStorage.setItem(storageKey, e.target.checked);
+                if (e.target.checked) {
+                    card.classList.add('completed');
+                } else {
+                    card.classList.remove('completed');
+                }
+            });
+            
+            return card;
+        }
+
+        function renderDay(dayKey) {
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = '';
+            
+            const dayData = rutina[dayKey];
+            
+            const dayTitle = document.createElement('div');
+            dayTitle.className = 'day-title';
+            dayTitle.textContent = dayData.title;
+            contentArea.appendChild(dayTitle);
+            
+            dayData.sections.forEach((section, sectionIdx) => {
+                const sectionLabel = document.createElement('div');
+                sectionLabel.className = 'section-label';
+                
+                const sectionName = document.createElement('span');
+                sectionName.textContent = section.name;
+                sectionLabel.appendChild(sectionName);
+
+                if (editMode) {
+                    const addBtn = document.createElement('button');
+                    addBtn.className = 'add-exercise-btn';
+                    addBtn.textContent = '+ Agregar';
+                    addBtn.onclick = (e) => {
+                        e.preventDefault();
+                        openAddModal(dayKey, section.name);
+                    };
+                    sectionLabel.appendChild(addBtn);
+                }
+
+                contentArea.appendChild(sectionLabel);
+                
+                section.exercises.forEach((exercise, idx) => {
+                    const exerciseId = `${dayKey}_${section.name}_${idx}`;
+                    const card = createExerciseCard(exercise, exerciseId, section.name, dayKey);
+                    contentArea.appendChild(card);
+                });
+            });
+        }
+
+        function initDaySelector() {
+            const selector = document.getElementById('daySelector');
+            days.forEach((day, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `day-btn ${idx === 0 ? 'active' : ''}`;
+                btn.textContent = day.label;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderDay(day.key);
+                });
+                selector.appendChild(btn);
+            });
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            const btn = document.getElementById('editToggleBtn');
+            btn.style.opacity = editMode ? '1' : '0.5';
+            document.body.classList.toggle('edit-mode');
+            
+            const activeBtn = document.querySelector('.day-btn.active');
+            const dayKey = days[Array.from(document.querySelectorAll('.day-btn')).indexOf(activeBtn)].key;
+            renderDay(dayKey);
+        }
+
+        function openAddModal(dayKey, sectionName) {
+            currentEditingId = `new_${dayKey}_${sectionName}`;
+            document.getElementById('modalTitle').textContent = 'Agregar Ejercicio';
+            document.getElementById('exerciseForm').reset();
+            document.getElementById('saveBtn').textContent = 'Agregar';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function openEditModal(exercise, id, sectionName, dayKey) {
+            currentEditingId = id;
+            document.getElementById('modalTitle').textContent = 'Editar Ejercicio';
+            document.getElementById('exerciseName').value = exercise.name;
+            document.getElementById('exerciseReps').value = exercise.reps || '';
+            document.getElementById('exerciseVideo').value = exercise.video || '';
+            document.getElementById('saveBtn').textContent = 'Guardar Cambios';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+            currentEditingId = null;
+        }
+
+        function saveExercise(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('exerciseName').value.trim();
+            const reps = document.getElementById('exerciseReps').value.trim();
+            const video = document.getElementById('exerciseVideo').value.trim();
+
+            if (!name) {
+                alert('El nombre del ejercicio es requerido');
+                return;
+            }
+
+            if (currentEditingId.startsWith('new_')) {
+                // Add new exercise
+                const [, dayKey, sectionName] = currentEditingId.split('_');
+                const section = rutina[dayKey].sections.find(s => s.name === sectionName);
+                section.exercises.push({
+                    name,
+                    reps: reps || undefined,
+                    video: video || undefined
+                });
+            } else {
+                // Edit existing exercise
+                const [dayKey, sectionName, idx] = currentEditingId.split('_');
+                const section = rutina[dayKey].sections.find(s => s.name === sectionName);
+                section.exercises[parseInt(idx)] = {
+                    name,
+                    reps: reps || undefined,
+                    video: video || undefined
+                };
+            }
+
+            saveRutina();
+            closeEditModal();
+
+            const activeBtn = document.querySelector('.day-btn.active');
+            const dayKey = days[Array.from(document.querySelectorAll('.day-btn')).indexOf(activeBtn)].key;
+            renderDay(dayKey);
+        }
+
+        function deleteExercise(dayKey, sectionName, exercise) {
+            if (confirm(`¿Eliminar "${exercise.name}"?`)) {
+                const section = rutina[dayKey].sections.find(s => s.name === sectionName);
+                const idx = section.exercises.indexOf(exercise);
+                section.exercises.splice(idx, 1);
+                saveRutina();
+                renderDay(dayKey);
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            updateToggleButton();
+        }
+
+        function updateToggleButton() {
+            const btn = document.getElementById('toggleDark');
+            btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Event listeners
+        document.getElementById('editToggleBtn').addEventListener('click', toggleEditMode);
+        document.getElementById('toggleDark').addEventListener('click', toggleDarkMode);
+        document.getElementById('cancelBtn').addEventListener('click', closeEditModal);
+        document.getElementById('exerciseForm').addEventListener('submit', saveExercise);
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('editModal')) {
+                closeEditModal();
+            }
+        });
+
+        // Initialize
+        loadRutina();
+        initDaySelector();
+        renderDay('lunes');
+        renderMeasures();
+        
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            updateToggleButton();
+        }
+    </script>
+</body>
+</html>
